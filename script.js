@@ -133,6 +133,8 @@ function enableCam(event) {
     });
 }
 let lastVideoTime = -1;
+import lodash from 'https://cdn.jsdelivr.net/npm/lodash@4.17.21/+esm'
+const _ = lodash
 async function predictWebcam() {
     canvasElement.style.height = videoHeight;
     video.style.height = videoHeight;
@@ -156,6 +158,15 @@ async function predictWebcam() {
                 drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
             }
             canvasCtx.restore();
+
+            // 检测脚的纵坐标值
+            if (result.landmarks.length > 0) {
+                const idxes = _.range(27, 33);
+                const landmarks = idxes.map(i => result.landmarks[0][i]);
+                if (_.every(landmarks, (i) => i !== null && i !== undefined)) {
+                    console.log(_.min(landmarks.map(i => i.y)));
+                }
+            }
         });
     }
     // Call this function again to keep predicting when the browser is ready.
