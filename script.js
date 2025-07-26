@@ -16,8 +16,7 @@ let poseLandmarker = undefined;
 let runningMode = "IMAGE";
 let enableWebcamButton;
 let webcamRunning = false;
-const videoHeight = "360px";
-const videoWidth = "480px";
+const videoWidth = window.innerWidth;
 // Before we can use PoseLandmarker class we must wait for it to finish
 // loading. Machine Learning models can be large and take a moment to
 // get everything needed to run.
@@ -131,16 +130,19 @@ function enableCam(event) {
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
         video.srcObject = stream;
         video.addEventListener("loadeddata", predictWebcam);
+        video.addEventListener('loadedmetadata', function() {
+            const videoHeight = videoWidth / video.videoWidth * video.videoHeight;
+            canvasElement.style.height = videoHeight + 'px';
+            video.style.height = videoHeight + 'px';
+            canvasElement.style.width = videoWidth + 'px';
+            video.style.width = videoWidth + 'px';
+        })
     });
 }
 let lastVideoTime = -1;
 import lodash from 'https://cdn.jsdelivr.net/npm/lodash@4.17.21/+esm'
 const _ = lodash
 async function predictWebcam() {
-    canvasElement.style.height = videoHeight;
-    video.style.height = videoHeight;
-    canvasElement.style.width = videoWidth;
-    video.style.width = videoWidth;
     // Now let's start detecting the stream.
     if (runningMode === "IMAGE") {
         runningMode = "VIDEO";
