@@ -83,7 +83,10 @@ function enableCam(event) {
         })
     });
 }
-let lastVideoTime = -1
+
+let lastVideoTime = -1;
+let lastKneels = null;
+let lastLastKneels = null;
 async function predictWebcam() {
     // Now let's start detecting the stream.
     if (runningMode === "IMAGE") {
@@ -94,24 +97,33 @@ async function predictWebcam() {
     if (lastVideoTime !== video.currentTime) {
         lastVideoTime = video.currentTime;
         poseLandmarker.detectForVideo(video, startTimeMs, (result) => {
+            if (result.landmarks.length === 0) return;
+            if (_.some(result.landmarks[0], i => i.y > 1)) return;
+
+            const landmark = result.landmarks[0];
             canvasCtx.save();
             canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-            for (const landmark of result.landmarks) {
-                drawingUtils.drawLandmarks(landmark, {
-                    radius: (data) => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
-                });
-                drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
-            }
+            drawingUtils.drawLandmarks(landmark, {
+                radius: (data) => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
+            });
+            drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
             canvasCtx.restore();
 
-            // 检测脚的纵坐标值
-            if (result.landmarks.length > 0) {
-                const idxes = _.range(27, 33);
-                const landmarks = idxes.map(i => result.landmarks[0][i]);
-                if (_.every(landmarks, (i) => i !== null && i !== undefined)) {
-                    console.log(_.min(landmarks.map(i => i.y)));
+            // 检测膝盖的纵坐标值
+            console.log(landmark);
+            const currKneels = [landmark[0][25], landmark[0][26]];
+            if (!currKneels[0] || !currKneels) return;
+
+            if (lastLastKneels !== null && lastKneels !== null) {
+                // 检测是否为一次的结束
+                if (currKneels[0].y <= lastKneels[0].y && lastKneels[0].y >= lastLastKneels[0].y
+                    && currKneels[1].y <= lastKneels[1].y && lastKneels[1].y >= lastLastKneels[1].y) {
+                    console.log('++++++++++++++++++++++++++++1');
                 }
             }
+
+            lastLastKneels = lastKneels;
+            lastKneels = currKneels;
         });
     }
     // Call this function again to keep predicting when the browser is ready.
