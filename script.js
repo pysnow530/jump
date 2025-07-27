@@ -35,62 +35,6 @@ const createPoseLandmarker = async () => {
 };
 createPoseLandmarker();
 /********************************************************************
-// Demo 1: Grab a bunch of images from the page and detection them
-// upon click.
-********************************************************************/
-// In this demo, we have put all our clickable images in divs with the
-// CSS class 'detectionOnClick'. Lets get all the elements that have
-// this class.
-const imageContainers = document.getElementsByClassName("detectOnClick");
-// Now let's go through all of these and add a click event listener.
-for (let i = 0; i < imageContainers.length; i++) {
-    // Add event listener to the child element whichis the img element.
-    imageContainers[i].children[0].addEventListener("click", handleClick);
-}
-// When an image is clicked, let's detect it and display results!
-async function handleClick(event) {
-    if (!poseLandmarker) {
-        console.log("Wait for poseLandmarker to load before clicking!");
-        return;
-    }
-    if (runningMode === "VIDEO") {
-        runningMode = "IMAGE";
-        await poseLandmarker.setOptions({ runningMode: "IMAGE" });
-    }
-    // Remove all landmarks drawed before
-    const allCanvas = event.target.parentNode.getElementsByClassName("canvas");
-    for (var i = allCanvas.length - 1; i >= 0; i--) {
-        const n = allCanvas[i];
-        n.parentNode.removeChild(n);
-    }
-    // We can call poseLandmarker.detect as many times as we like with
-    // different image data each time. The result is returned in a callback.
-    poseLandmarker.detect(event.target, (result) => {
-        const canvas = document.createElement("canvas");
-        canvas.setAttribute("class", "canvas");
-        canvas.setAttribute("width", event.target.naturalWidth + "px");
-        canvas.setAttribute("height", event.target.naturalHeight + "px");
-        canvas.style =
-            "left: 0px;" +
-                "top: 0px;" +
-                "width: " +
-                event.target.width +
-                "px;" +
-                "height: " +
-                event.target.height +
-                "px;";
-        event.target.parentNode.appendChild(canvas);
-        const canvasCtx = canvas.getContext("2d");
-        const drawingUtils = new DrawingUtils(canvasCtx);
-        for (const landmark of result.landmarks) {
-            drawingUtils.drawLandmarks(landmark, {
-                radius: (data) => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
-            });
-            drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
-        }
-    });
-}
-/********************************************************************
 // Demo 2: Continuously grab image from webcam stream and detect it.
 ********************************************************************/
 const video = document.getElementById("webcam");
@@ -139,9 +83,7 @@ function enableCam(event) {
         })
     });
 }
-let lastVideoTime = -1;
-import lodash from 'https://cdn.jsdelivr.net/npm/lodash@4.17.21/+esm'
-const _ = lodash
+let lastVideoTime = -1
 async function predictWebcam() {
     // Now let's start detecting the stream.
     if (runningMode === "IMAGE") {

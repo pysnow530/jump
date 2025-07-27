@@ -64,8 +64,7 @@ footer {
   font-size: 130%;
 }
 
-.videoView,
-.detectOnClick {
+.videoView {
   position: relative;
   float: left;
   width: 48%;
@@ -73,8 +72,7 @@ footer {
   cursor: pointer;
 }
 
-.videoView p,
-.detectOnClick p {
+.videoView p {
   position: absolute;
   padding: 0;
   background-color: #007f8b;
@@ -102,12 +100,4 @@ footer {
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
-}
-
-.detectOnClick {
-  z-index: 0;
-}
-
-.detectOnClick img {
-  width: 100%;
 }
