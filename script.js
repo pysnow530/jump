@@ -10,7 +10,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { PoseLandmarker, FilesetResolver, DrawingUtils } from "https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0";
+// import { PoseLandmarker, FilesetResolver, DrawingUtils } from "https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0";
+import { PoseLandmarker, FilesetResolver, DrawingUtils } from "./node_modules/@mediapipe/tasks-vision/vision_bundle.mjs";
 const demosSection = document.getElementById("demos");
 let poseLandmarker = undefined;
 let runningMode = "IMAGE";
@@ -21,11 +22,12 @@ const videoWidth = window.innerWidth;
 // loading. Machine Learning models can be large and take a moment to
 // get everything needed to run.
 const createPoseLandmarker = async () => {
-    const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm");
+    // const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm");
+    const vision = await FilesetResolver.forVisionTasks("/node_modules/@mediapipe/tasks-vision/wasm");
     poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
         baseOptions: {
             // modelAssetPath: `https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task`,
-            modelAssetPath: `/pose_landmarker_lite.task`,
+            modelAssetPath: `/models/pose_landmarker_lite.task`,
             delegate: "GPU"
         },
         runningMode: runningMode,
@@ -53,7 +55,7 @@ else {
     console.warn("getUserMedia() is not supported by your browser");
 }
 // Enable the live webcam view and start detection.
-function enableCam(event) {
+function enableCam(_) {
     if (!poseLandmarker) {
         console.log("Wait! poseLandmaker not loaded yet.");
         return;
