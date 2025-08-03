@@ -26,18 +26,21 @@ limitations under the License. -->
 <body>
   <section id="demos" class="invisible">
     <div id="liveView" class="videoView">
-      <button id="webcamButton" class="mdc-button mdc-button--raised">
-        <span class="mdc-button__ripple"></span>
-        <span class="mdc-button__label">ENABLE WEBCAM</span>
+      <button id="webcamButton">
+        ENABLE WEBCAM
       </button>
-      <div style="position: relative;">
-        <video id="webcam" style="width: 1280px; height: 720px; position: abso" autoplay playsinline></video>
-        <canvas class="output_canvas" id="output_canvas" width="1280" height="720" style="position: absolute; left: 0px; top: 0px;"></canvas>
+      <div style="position: relative; float: left; width: 50%; margin-top: 20px">
+        <video id="webcam" style="width: 600px; height: 400px; position: absolute" autoplay playsinline></video>
+        <canvas class="output_canvas" id="output_canvas" width="600" height="400" style="position: absolute; left: 0px; top: 0px;"></canvas>
+      </div>
+      <div style="position: fixed; right: 0">
+          <canvas id="debug-panel" width="600px" height="400px"></canvas>
       </div>
     </div>
   </section>
   <!-- partial -->
   <script src="/node_modules/lodash/lodash.min.js"></script>
+  <script type="module" src="../../node_modules/chart.js/dist/chart.umd.js"></script>
   <script type="module" src="./script.js"></script>
 
 </body>
