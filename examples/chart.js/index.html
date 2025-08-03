@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态折线图 - 最多1000个点</title>
+    <script type="module" src="../../node_modules/chart.js/dist/chart.umd.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .chart-container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        #myChart {
+            margin-top: 20px;
+        }
+        .controls {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <h2>动态折线图 (最多1000个点)</h2>
+        <div class="controls">
+            <button id="addPoint">添加随机点</button>
+            <button id="startAuto">自动添加</button>
+            <button id="stopAuto">停止自动</button>
+            <button id="resetChart">重置图表</button>
+        </div>
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script src="./app.js"></script>
+</body>
+</html>
