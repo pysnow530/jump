@@ -86,9 +86,15 @@ function enableCam(_) {
     });
 }
 
+const NODES = [
+    {idx: 11, label: 'Left Shoulder'}, {idx: 12, label: 'Right Shoulder'},
+    {idx: 23, label: 'Left Hip'}, {idx: 24, label: 'Right Hip'},
+    {idx: 25, label: 'Left Knee'}, {idx: 26, label: 'Right Knee'},
+    {idx: 27, label: 'Left Ankle'}, {idx: 28, label: 'Right Ankle'},
+];
+
 let lastVideoTime = -1;
-let lastKneels = null;
-let lastLastKneels = null;
+
 async function predictWebcam() {
     // Now let's start detecting the stream.
     if (runningMode === "IMAGE") {
@@ -118,25 +124,13 @@ async function predictWebcam() {
             canvasCtx.restore();
 
             // 检测膝盖的纵坐标值
-            const currKneels = [landmark[25], landmark[26]];
-            const currAnkles = [landmark[27], landmark[28]];
-            if (!currKneels[0] || !currKneels[1]) {
-                console.log(`kneels数据为空: ${JSON.stringify(currKneels)}, ${JSON.stringify(currAnkles)}, ${JSON.stringify(landmark[0])}`);
+            const nodeData = _.map(NODES, (node) => landmark[node.idx]);
+            if (_.some(nodeData, i => !i)) {
+                console.log(`部分数据为空, 退出: ${JSON.stringify(nodeData)}`);
                 return;
             }
 
-            addDataPoint(currAnkles[0].y, currAnkles[1].y);
-
-            if (lastLastKneels !== null && lastKneels !== null) {
-                // 检测是否为一次的结束
-                if (currKneels[0].y <= lastKneels[0].y && lastKneels[0].y >= lastLastKneels[0].y
-                    && currKneels[1].y <= lastKneels[1].y && lastKneels[1].y >= lastLastKneels[1].y) {
-                    console.log('++++++++++++++++++++++++++++1');
-                }
-            }
-
-            lastLastKneels = lastKneels;
-            lastKneels = currKneels;
+            addDataPoint(_.map(nodeData, _.property('y')));
         });
     }
     // Call this function again to keep predicting when the browser is ready.
@@ -151,20 +145,12 @@ const MAX_POINTS = 200;
 let dataIndex = 0;
 let panelData = {
     labels: [],
-    datasets: [
-        {
-            label: 'Left Ankle',
-            data: [],
-            tension: 0.1,
-            fill: false
-        },
-        {
-            label: 'Right Ankle',
-            data: [],
-            tension: 0.1,
-            fill: false
-        },
-    ]
+    datasets: _.map(NODES, (node) => ({
+        label: node.label,
+        data: [],
+        tension: 0.1,
+        fill: false
+    }))
 };
 
 let chart = new Chart(panelCtx, {
@@ -182,7 +168,7 @@ let chart = new Chart(panelCtx, {
             y: {
                 title: {
                     display: true,
-                    text: '数值'
+                    text: '关节y值'
                 },
                 // suggestedMin: 0,
                 // suggestedMax: 1
@@ -194,21 +180,19 @@ let chart = new Chart(panelCtx, {
     }
 });
 
-const addDataPoint = (leftAnkle, rightAnkle) => {
+const addDataPoint = (ys) => {
     panelData.labels.push(dataIndex + '');
     dataIndex += 1;
-    panelData.datasets[0].data.push(leftAnkle);
-    panelData.datasets[1].data.push(rightAnkle);
+    _.each(_.range(ys.length), (i) => panelData.datasets[i].data.push(ys[i]))
 
     // 如果数据超过最大点数，移除最旧的数据
     if (panelData.labels.length > MAX_POINTS) {
         panelData.labels.shift();
-        panelData.datasets[0].data.shift();
-        panelData.datasets[1].data.shift();
+        _.each(_.range(ys.length), (i) => panelData.datasets[i].data.shift())
     }
     
     // 更新图表
     chart.update();
 };
 
-// addDataPoint(0.8, 0.6);
+// addDataPoint([0.8, 0.6]);
