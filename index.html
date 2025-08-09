@@ -1,49 +1,39 @@
 <!DOCTYPE html>
 <html lang="en" >
-<head>
-  <meta charset="UTF-8">
-  <title>MediaPipe Pose Landmarker Task for web</title>
-  <link rel="stylesheet" href="./style.css">
 
-</head>
-<body>
-<!-- partial:index.partial.html -->
-<!-- Copyright 2023 The MediaPipe Authors.
+    <head>
+        <meta charset="UTF-8">
+        <title>MediaPipe Pose Landmarker Task for web</title>
+        <link rel="stylesheet" href="./style.css">
+    </head>
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+    <body>
 
-     http://www.apache.org/licenses/LICENSE-2.0
+        <section id="jump">
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License. -->
-</script>
+            <div id="liveView" class="videoView">
 
-<body>
-  <section id="demos" class="invisible">
-    <div id="liveView" class="videoView">
-      <button id="webcamButton">
-        ENABLE WEBCAM
-      </button>
-      <div style="position: relative; float: left; width: 50%; margin-top: 20px">
-        <video id="webcam" style="width: 600px; height: 400px; position: absolute" autoplay playsinline></video>
-        <canvas class="output_canvas" id="output_canvas" width="600" height="400" style="position: absolute; left: 0px; top: 0px;"></canvas>
-      </div>
-      <div style="position: fixed; right: 0">
-          <canvas id="debug-panel" width="800px" height="600px"></canvas>
-      </div>
-      <audio id="bgMusic" controls>
-          <source src="/assets/audios/dong.mp3" type="audio/mpeg">
-      </audio>
-    </div>
-  </section>
-  <!-- partial -->
-  <script src="/node_modules/lodash/lodash.min.js"></script>
-  <script type="module" src="../../node_modules/chart.js/dist/chart.umd.js"></script>
-  <script type="module" src="./script.js"></script>
-</body>
+                <div style="position: relative; float: left; width: 50%; margin-top: 20px">
+                    <video id="webcam" style="width: 600px; height: 400px; position: absolute" autoplay playsinline></video>
+                    <canvas class="output_canvas" id="output_canvas" width="600" height="400" style="position: absolute; left: 0px; top: 0px;"></canvas>
+                </div>
+
+                <audio id="bgMusic">
+                    <source src="/assets/audios/dong.mp3" type="audio/mpeg">
+                </audio>
+
+                <div style="position: fixed; right: 0">
+                    <canvas id="debug-panel" width="800px" height="600px"></canvas>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- partial -->
+        <script src="/node_modules/lodash/lodash.min.js"></script>
+        <script type="module" src="../../node_modules/chart.js/dist/chart.umd.js"></script>
+        <script type="module" src="./script.js"></script>
+    </body>
+
 </html>
