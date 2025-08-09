@@ -87,13 +87,16 @@ function enableCam(_) {
 }
 
 const NODES = [
-    {idx: 11, label: 'Left Shoulder'}, {idx: 12, label: 'Right Shoulder'},
-    {idx: 23, label: 'Left Hip'}, {idx: 24, label: 'Right Hip'},
-    {idx: 25, label: 'Left Knee'}, {idx: 26, label: 'Right Knee'},
-    {idx: 27, label: 'Left Ankle'}, {idx: 28, label: 'Right Ankle'},
+    { idx: 11, label: 'Left Shoulder' }, { idx: 12, label: 'Right Shoulder' },
+    { idx: 23, label: 'Left Hip' }, { idx: 24, label: 'Right Hip' },
+    { idx: 25, label: 'Left Knee' }, { idx: 26, label: 'Right Knee' },
+    { idx: 27, label: 'Left Ankle' }, { idx: 28, label: 'Right Ankle' },
 ];
 
 let lastVideoTime = -1;
+let lastLandmark = null;
+let hasUpList = _.range(33).map(_ => false);
+let minYList = null
 
 async function predictWebcam() {
     // Now let's start detecting the stream.
@@ -115,6 +118,33 @@ async function predictWebcam() {
             }
 
             const landmark = result.landmarks[0];
+            if (_.some(landmark, i => !i)) {
+                console.log(`部分数据为空, 退出: ${JSON.stringify(landmark)}`);
+                return;
+            }
+
+            // 检测跳绳计数
+            if (lastLandmark && minYList) {
+                const isUpList = _.map(lastLandmark, (p, idx) => landmark[idx].y < p.y)
+                hasUpList = _.map(hasUpList, (b, idx) => b || isUpList[idx])
+
+                // 如果关键骨骼节点都已满足, 就做进一步判断
+                const keyNodesAllHasUp = _.every(NODES, n => hasUpList[n.idx]);
+                const deltaAllBigEnough = _.every(NODES, n => landmark[n.idx].y - minYList[n.idx] > 0.01)
+                if (keyNodesAllHasUp && deltaAllBigEnough) {
+                    const audio = document.getElementById('bgMusic');
+                    audio.play(); // 可能需要用户交互后触发（如点击事件）
+                    hasUpList = _.range(33).map(_ => false);
+                    minYList = null
+                }
+            }
+            lastLandmark = landmark;
+            if (minYList) {
+                minYList = _.map(minYList, (y, idx) => Math.min(y, lastLandmark[idx].y));
+            } else {
+                minYList = _.map(lastLandmark, i => i.y);
+            }
+
             canvasCtx.save();
             canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
             drawingUtils.drawLandmarks(landmark, {
@@ -125,11 +155,6 @@ async function predictWebcam() {
 
             // 检测膝盖的纵坐标值
             const nodeData = _.map(NODES, (node) => landmark[node.idx]);
-            if (_.some(nodeData, i => !i)) {
-                console.log(`部分数据为空, 退出: ${JSON.stringify(nodeData)}`);
-                return;
-            }
-
             addDataPoint(_.map(nodeData, _.property('y')));
         });
     }
@@ -190,7 +215,7 @@ const addDataPoint = (ys) => {
         panelData.labels.shift();
         _.each(_.range(ys.length), (i) => panelData.datasets[i].data.shift())
     }
-    
+
     // 更新图表
     chart.update();
 };
