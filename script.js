@@ -14,7 +14,6 @@
 import { PoseLandmarker, FilesetResolver, DrawingUtils } from "./node_modules/@mediapipe/tasks-vision/vision_bundle.mjs";
 
 let poseLandmarker = null;
-const videoWidth = window.innerWidth / 2;
 
 const video = document.getElementById("webcam");
 const canvasElement = document.getElementById("output_canvas");
@@ -53,13 +52,29 @@ function enableCam() {
         video.srcObject = stream;
         // 监听视频帧
         video.addEventListener("loadeddata", predictWebcam);
-        // 重置视频大小
+        // 重置视频大小 (尽可能占满整个屏幕)
         video.addEventListener('loadedmetadata', function() {
-            const videoHeight = videoWidth / video.videoWidth * video.videoHeight;
-            canvasElement.style.height = videoHeight + 'px';
-            video.style.height = videoHeight + 'px';
-            canvasElement.style.width = videoWidth + 'px';
-            video.style.width = videoWidth + 'px';
+            const winWidth = window.innerWidth;
+            const ratioHeight = winWidth / video.videoWidth * video.videoHeight;
+
+            const winHeight = window.innerHeight;
+            const ratioWidth = winHeight / video.videoHeight * video.videoWidth;
+
+            let targetWidth, targetHeight
+            if (ratioHeight < winHeight) {
+                targetWidth = winWidth;
+                targetHeight = ratioHeight;
+            } else {
+                targetWidth = ratioWidth;
+                targetHeight = winHeight;
+            }
+
+            canvasElement.style.height = targetHeight + 'px';
+            video.style.height = targetHeight + 'px';
+            canvasElement.style.width = targetWidth + 'px';
+            video.style.width = targetWidth + 'px';
+
+            document.getElementById('main').style.height = targetHeight + 'px';
         })
     });
 }

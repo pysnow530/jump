@@ -1,39 +1,7 @@
-<!DOCTYPE html>
-<html lang="en" >
-
-    <head>
-        <meta charset="UTF-8">
-        <title>MediaPipe Pose Landmarker Task for web</title>
-        <link rel="stylesheet" href="./style.css">
-    </head>
-
+<html>
     <body>
-
-        <section id="jump">
-
-            <div id="liveView" class="videoView">
-
-                <div style="position: relative; float: left; width: 50%; margin-top: 20px">
-                    <video id="webcam" style="width: 600px; height: 400px; position: absolute" autoplay playsinline></video>
-                    <canvas class="output_canvas" id="output_canvas" width="600" height="400" style="position: absolute; left: 0px; top: 0px;"></canvas>
-                </div>
-
-                <audio id="bgMusic">
-                    <source src="/assets/audios/dong.mp3" type="audio/mpeg">
-                </audio>
-
-                <div style="position: fixed; right: 0">
-                    <canvas id="debug-panel" width="800px" height="600px"></canvas>
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- partial -->
-        <script src="/node_modules/lodash/lodash.min.js"></script>
-        <script type="module" src="../../node_modules/chart.js/dist/chart.umd.js"></script>
-        <script type="module" src="./script.js"></script>
+        <a href="/jump.html">
+            开始跳绳
+        </a>
     </body>
-
 </html>
