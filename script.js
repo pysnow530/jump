@@ -91,6 +91,22 @@ let lastLandmark = null;
 let hasUpList = _.range(33).map(_ => false);
 let minYList = null
 
+let COUNT = 0
+let START = null
+
+// 更新时间的函数
+function updateHUD(ctx, canvas) {
+    // 清除Canvas（使用透明清除）
+    ctx.clearRect(0, 0, 80, 80);
+
+    // 绘制时间
+    const currTimestamp = new Date().getTime();
+    ctx.fillText((currTimestamp - START) / 1000, 10, 30);
+
+    // 绘制计数
+    ctx.fillText(COUNT + '', 10, 60);
+}
+
 async function predictWebcam() {
     let startTimeMs = performance.now();
     if (lastVideoTime !== video.currentTime) {
@@ -122,6 +138,12 @@ async function predictWebcam() {
                 if (keyNodesAllHasUp && deltaAllBigEnough) {
                     const audio = document.getElementById('bgMusic');
                     audio.play(); // 可能需要用户交互后触发（如点击事件）
+                    if (START === null) {
+                        START = new Date().getTime();
+                        canvasCtx.fillStyle = 'red';
+                        canvasCtx.font = '40px Arial';
+                    }
+                    COUNT += 1;
                     hasUpList = _.range(33).map(_ => false);
                     minYList = null
                 }
@@ -135,11 +157,16 @@ async function predictWebcam() {
 
             canvasCtx.save();
             canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-            drawingUtils.drawLandmarks(landmark, {
-                radius: (data) => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
-            });
-            drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
+            const flippedLandmark = _.map(landmark, i => ({ x: 1 - i.x, y: i.y, z: i.z }));
+            // drawingUtils.drawLandmarks(flippedLandmark, {
+            //     radius: (data) => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
+            // });
+            drawingUtils.drawConnectors(flippedLandmark, PoseLandmarker.POSE_CONNECTIONS);
             canvasCtx.restore();
+
+            if (START !== null) {
+                updateHUD(canvasCtx, canvasElement);
+            }
 
             // 检测膝盖的纵坐标值
             const nodeData = _.map(NODES, (node) => landmark[node.idx]);
